@@ -46,6 +46,10 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Boolean enabled;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserSubscription> subscriptions = new HashSet<>();
+
     private Instant createdAt;
 
     @PrePersist
