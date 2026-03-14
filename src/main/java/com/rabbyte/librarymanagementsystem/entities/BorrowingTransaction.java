@@ -1,16 +1,23 @@
 package com.rabbyte.librarymanagementsystem.entities;
 
-import com.rabbyte.librarymanagementsystem.utils.constants.BorrowStatus;
+import com.rabbyte.librarymanagementsystem.utils.enums.BorrowStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
+import java.util.Date;
 
 @Entity
-@Table(name = "borrowing_transactions")
+@Table(name = "borrowing_transactions",
+        indexes = {
+                @Index(name = "idx_borrowing_user", columnList = "user_id"),
+                @Index(name = "idx_borrowing_copy", columnList = "copy_id"),
+                @Index(name = "idx_borrowing_status", columnList = "status"),
+                @Index(name = "idx_borrowing_returned_at", columnList = "returned_at")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,17 +31,27 @@ public class BorrowingTransaction {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "copy_id")
     private BookCopy bookCopy;
-    private Instant borrowedAt;
-    private Instant returnedAt;
+
+    @Column(name = "borrowed_at", nullable = false, updatable = false)
+    private Date borrowedAt;
+
+    @Column(name = "returned_at")
+    private Date returnedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
     private BorrowStatus status;
+
+    @Column(name = "fine_amount")
     private Double fineAmount;
 
     @PrePersist
     public void onCreate() {
-        this.borrowedAt = Instant.now();
-        this.status = BorrowStatus.Borrowed;
+        this.borrowedAt = new Date();
+        this.status = BorrowStatus.BORROWED;
+        this.fineAmount = 0.0;
     }
 }

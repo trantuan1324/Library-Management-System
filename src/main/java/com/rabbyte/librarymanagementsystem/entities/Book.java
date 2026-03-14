@@ -6,11 +6,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "books")
+@Table(name = "books",
+        indexes = {
+                @Index(name = "idx_book_title", columnList = "title"),
+                @Index(name = "idx_book_published_year", columnList = "published_year")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -31,6 +37,8 @@ public class Book {
 
     @Column(length = 255)
     private String description;
+
+    @Column(name = "image_url", length = 500)
     private String imageUrl;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
@@ -41,11 +49,22 @@ public class Book {
     )
     private Set<Author> authors = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "book_categories",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     private Set<Category> categories = new HashSet<>();
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<BookCopy> copies = new HashSet<>();
+
+    @Column(name = "created_at", updatable = false)
+    private Date createdAt;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = new Date();
+    }
 }

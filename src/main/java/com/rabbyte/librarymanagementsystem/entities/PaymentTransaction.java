@@ -1,13 +1,19 @@
 package com.rabbyte.librarymanagementsystem.entities;
 
-import com.rabbyte.librarymanagementsystem.utils.constants.PaymentProvider;
-import com.rabbyte.librarymanagementsystem.utils.constants.PaymentStatus;
+import com.rabbyte.librarymanagementsystem.utils.enums.PaymentProvider;
+import com.rabbyte.librarymanagementsystem.utils.enums.PaymentStatus;
 import jakarta.persistence.*;
-
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "payment_transactions")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PaymentTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
