@@ -7,22 +7,21 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "book_copies")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookCopy {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class BookCopy extends BaseEntity{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
 
-    @Column(name = "bar_code", length = 10, nullable = false, unique = true)
+    @Column(name = "bar_code", length = 50, nullable = false, unique = true)
     private String barCode;
 
     @Enumerated(EnumType.STRING)
@@ -34,10 +33,5 @@ public class BookCopy {
     @Column(name = "book_condition", length = 255)
     private String bookCondition;
     private Double price;
-
-    @PrePersist
-    public void onCreate() {
-        this.status = BookCopyStatus.AVAILABLE;
-    }
 }
 

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,20 +13,22 @@ import java.util.Set;
 @Table(name = "books",
         indexes = {
                 @Index(name = "idx_book_title", columnList = "title"),
-                @Index(name = "idx_book_published_year", columnList = "published_year")
+                @Index(name = "idx_book_published_year", columnList = "published_year"),
+                @Index(name = "idx_book_isbn", columnList = "isbn")
         }
 )
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Book {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Book extends BaseEntity{
 
     @Column(length = 255, nullable = false)
     private String title;
+
+    // API Google Books/OpenLibrary.
+    @Column(length = 20, unique = true)
+    private String isbn;
 
     @Column(length = 255)
     private String publisher;
@@ -35,7 +36,7 @@ public class Book {
     @Column(length = 4)
     private String publishedYear;
 
-    @Column(length = 255)
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(name = "image_url", length = 500)
@@ -60,11 +61,8 @@ public class Book {
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<BookCopy> copies = new HashSet<>();
 
-    @Column(name = "created_at", updatable = false)
-    private Date createdAt;
+    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private Set<BookReview> bookReview;
 
-    @PrePersist
-    public void onCreate() {
-        this.createdAt = new Date();
-    }
+    private int totalCopies;
 }

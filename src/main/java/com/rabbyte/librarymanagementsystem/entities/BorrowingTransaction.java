@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -15,7 +16,8 @@ import java.util.Date;
                 @Index(name = "idx_borrowing_user", columnList = "user_id"),
                 @Index(name = "idx_borrowing_copy", columnList = "copy_id"),
                 @Index(name = "idx_borrowing_status", columnList = "status"),
-                @Index(name = "idx_borrowing_returned_at", columnList = "returned_at")
+                @Index(name = "idx_borrowing_returned_at", columnList = "returned_at"),
+                @Index(name = "idx_borrowing_due_date_status", columnList = "due_date, status")
         }
 )
 @Getter
@@ -36,10 +38,13 @@ public class BorrowingTransaction {
     private BookCopy bookCopy;
 
     @Column(name = "borrowed_at", nullable = false, updatable = false)
-    private Date borrowedAt;
+    private LocalDateTime borrowedAt;
+
+    @Column(name = "due_date", nullable = false)
+    private LocalDateTime dueDate;
 
     @Column(name = "returned_at")
-    private Date returnedAt;
+    private LocalDateTime returnedAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
@@ -50,7 +55,7 @@ public class BorrowingTransaction {
 
     @PrePersist
     public void onCreate() {
-        this.borrowedAt = new Date();
+        this.borrowedAt = LocalDateTime.now();
         this.status = BorrowStatus.BORROWED;
         this.fineAmount = 0.0;
     }
