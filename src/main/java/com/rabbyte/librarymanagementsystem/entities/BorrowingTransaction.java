@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SoftDeleteType;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -31,10 +35,12 @@ public class BorrowingTransaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @NotFound(action = NotFoundAction.IGNORE)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "copy_id")
+    @NotFound(action = NotFoundAction.IGNORE)
     private BookCopy bookCopy;
 
     @Column(name = "borrowed_at", nullable = false, updatable = false)
@@ -57,6 +63,5 @@ public class BorrowingTransaction {
     public void onCreate() {
         this.borrowedAt = LocalDateTime.now();
         this.status = BorrowStatus.BORROWED;
-        this.fineAmount = 0.0;
     }
 }

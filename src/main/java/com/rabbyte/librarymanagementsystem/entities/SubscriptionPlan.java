@@ -29,4 +29,11 @@ public class SubscriptionPlan {
     private Integer maxBorrowLimit;
 
     private Boolean active;
+
+    private String description;
+
+    @PrePersist
+    public void onCreate() {
+        this.active = true;
+    }
 }

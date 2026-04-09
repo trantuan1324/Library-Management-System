@@ -5,6 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SoftDeleteType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,6 +25,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 public class Book extends BaseEntity{
 
     @Column(length = 255, nullable = false)
@@ -50,7 +55,7 @@ public class Book extends BaseEntity{
     )
     private Set<Author> authors = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_categories",
             joinColumns = @JoinColumn(name = "book_id"),
@@ -58,11 +63,11 @@ public class Book extends BaseEntity{
     )
     private Set<Category> categories = new HashSet<>();
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
     private Set<BookCopy> copies = new HashSet<>();
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<BookReview> bookReview;
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
+    private Set<BookReview> bookReviews = new HashSet<>();
 
     private int totalCopies;
 }

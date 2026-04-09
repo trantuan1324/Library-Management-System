@@ -7,7 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_subscriptions",
@@ -26,7 +26,7 @@ public class UserSubscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -35,10 +35,10 @@ public class UserSubscription {
     private SubscriptionPlan subscriptionPlan;
 
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
 
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 10)
@@ -46,13 +46,7 @@ public class UserSubscription {
 
     @PrePersist
     public void onCreate() {
-        this.startDate = new Date();
+        this.startDate = LocalDateTime.now();
         this.status = SubscriptionStatus.ACTIVE;
-
-        if (subscriptionPlan != null && subscriptionPlan.getDurationDays() != null) {
-            long durationMillis = subscriptionPlan.getDurationDays() * 86400000L;
-            this.endDate = new Date(this.startDate.getTime() + durationMillis);
-        }
     }
-
 }

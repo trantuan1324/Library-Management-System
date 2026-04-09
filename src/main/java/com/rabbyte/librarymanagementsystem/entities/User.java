@@ -6,8 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SoftDeleteType;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -53,7 +54,7 @@ public class User extends BaseEntity{
     private Set<Role> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
-    private Set<BorrowingTransaction>  transactions = new HashSet<>();
+    private Set<BorrowingTransaction> transactions = new HashSet<>();
 
     @Column(nullable = false)
     private Boolean enabled;

@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,10 +15,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Author {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Author extends BaseEntity{
 
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
@@ -30,14 +26,6 @@ public class Author {
     @Column(name = "nationality", length = 255)
     private String nationality;
 
-    @ManyToMany(mappedBy = "authors")
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
     private Set<Book> books = new HashSet<>();
-
-    @Column(name = "deleted_at")
-    private Date deletedAt;
-
-    @PreRemove
-    public void onRemove() {
-        this.deletedAt = new Date();
-    }
 }
