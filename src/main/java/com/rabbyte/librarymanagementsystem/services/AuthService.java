@@ -7,11 +7,9 @@ import com.rabbyte.librarymanagementsystem.dtos.auth.response.AuthResponse;
 import com.rabbyte.librarymanagementsystem.entities.Role;
 import com.rabbyte.librarymanagementsystem.entities.Session;
 import com.rabbyte.librarymanagementsystem.entities.User;
-import com.rabbyte.librarymanagementsystem.repositories.SessionRepository;
 import com.rabbyte.librarymanagementsystem.repositories.UserRepository;
 import com.rabbyte.librarymanagementsystem.security.JwtUtils;
 import com.rabbyte.librarymanagementsystem.security.UserDetailsImpl;
-import com.rabbyte.librarymanagementsystem.utils.enums.AuthProvider;
 import com.rabbyte.librarymanagementsystem.utils.enums.RoleName;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 @Service
@@ -135,4 +132,31 @@ public class AuthService {
                 .build();
     }
 
+    private UserDetailsImpl getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return authentication.getPrincipal() instanceof UserDetailsImpl
+                ? (UserDetailsImpl) authentication.getPrincipal()
+                : null;
+    }
+
+    @Transactional
+    public void logoutAllDevices() {
+        UserDetailsImpl currentUser = getCurrentUser();
+
+        if (currentUser == null) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        sessionService.revokeAllTokensByUser(currentUser.getId());
+        SecurityContextHolder.clearContext();
+    }
+
+    @Transactional
+    public void logoutCurrentDevice(String refreshToken) {
+        if (refreshToken == null || refreshToken.trim().isEmpty()) {
+            throw new IllegalArgumentException("Refresh token is required");
+        }
+        sessionService.deleteByToken(refreshToken);
+    }
 }

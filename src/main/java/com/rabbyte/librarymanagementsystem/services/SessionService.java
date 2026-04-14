@@ -56,4 +56,9 @@ public class SessionService {
     public Session findByToken(String token) {
         return sessionRepository.findByRefreshToken(token).orElseThrow(() -> new RuntimeException("Session not found."));
     }
+
+    @Transactional
+    public void revokeAllTokensByUser(Long userId) {
+        sessionRepository.deleteAllByUserId(userId);
+    }
 }

@@ -14,7 +14,7 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
     @Modifying
     @Query("DELETE FROM Session s WHERE s.user.id = :userId")
-    void deleteByUserId(Long userId);
+    void deleteAllByUserId(Long userId);
 
     @Modifying
     @Query("UPDATE Session s SET s.revoked = true WHERE s.user.id = :userId")
@@ -23,4 +23,6 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     @Modifying
     @Query("DELETE FROM Session s WHERE s.refreshToken = :refreshToken")
     void deleteByRefreshToken(String refreshToken);
+
+
 }
