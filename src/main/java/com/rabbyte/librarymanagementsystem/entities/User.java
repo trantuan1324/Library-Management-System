@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.SoftDeleteType;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,7 +24,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class User extends BaseEntity{
 
     @Column(unique = true, nullable = false, length = 100)
@@ -62,9 +62,6 @@ public class User extends BaseEntity{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserSubscription> subscriptions = new HashSet<>();
 
-    @Column(name = "refresh_token", columnDefinition = "MEDIUMTEXT")
-    private String refreshToken;
-
     @PrePersist
     public void onCreate() {
         this.enabled = true;
@@ -74,5 +71,14 @@ public class User extends BaseEntity{
         } else {
             this.provider = AuthProvider.valueOf(this.provider.name());
         }
+    }
+
+    public User(LocalDateTime createdAt, String email, String password, String fullName, AuthProvider provider, Boolean enabled) {
+        super(createdAt);
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.provider = provider;
+        this.enabled = enabled;
     }
 }
